@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <stdio.h>
 
 #define MAXERR 100
 
@@ -26,5 +27,6 @@ typedef struct product product_t;
 product_t *get_palindrome_product(int from, int to);
 void free_product(product_t *p);
 bool is_palindrome(int n);
+void append_factor(factor_t **factor, int a, int b);
 
 #endif
