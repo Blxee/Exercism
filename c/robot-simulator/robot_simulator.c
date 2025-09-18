@@ -21,10 +21,10 @@ void robot_move(robot_status_t *robot, const char *commands)
 		switch (commands[i])
 		{
 			case 'L':
-				robot->direction = (robot->direction - 1) % 4;
+				robot->direction = (robot->direction - 1) % DIRECTION_MAX;
 				break;
 			case 'R':
-				robot->direction = (robot->direction + 1) % 4;
+				robot->direction = (robot->direction + 1) % DIRECTION_MAX;
 				break;
 			case 'A':
 				robot->position.x += steps[robot->direction].x;
