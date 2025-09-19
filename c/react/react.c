@@ -2,28 +2,42 @@
 
 struct reactor *create_reactor(void)
 {
-	struct reactor *result;
+	struct reactor *reactor;
 
-	result = malloc(sizeof(struct reactor));
-	result->callbacks = NULL;
-	return (result);
+	reactor = malloc(sizeof(struct reactor));
+	reactor->callbacks = NULL;
+	reactor->head = NULL;
+	return (reactor);
 }
 
 void destroy_reactor(struct reactor *reactor)
 {
+	struct cell *current;
+	struct cell *next;
+
+	current = reactor->head;
+	while (current)
+	{
+		next = current->next;
+		free(current);
+		current = next;
+	}
 	free(reactor);
 }
 
 struct cell *create_input_cell(struct reactor *reactor, int initial_value)
 {
-	struct cell *cell;
+	struct cell **cell;
 
-	(void)reactor;
-	cell = malloc(sizeof(struct cell));
-	cell->value = initial_value;
-	cell->depend_cell1 = NULL;
-	cell->depend_cell2 = NULL;
-	return (cell);
+	cell = &reactor->head;
+	while (*cell)
+		cell = &(*cell)->next;
+	*cell = malloc(sizeof(struct cell));
+	(*cell)->value = initial_value;
+	(*cell)->depend_cell1 = NULL;
+	(*cell)->depend_cell2 = NULL;
+	(*cell)->next = NULL;
+	return (*cell);
 }
 
 struct cell *create_compute1_cell(struct reactor *reactor, struct cell *cell, compute1 compute)

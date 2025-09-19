@@ -17,10 +17,12 @@ struct cell {
 		compute1 compute1;
 		compute2 compute2;
 	} funcs;
+	struct cell *next;
 };
 
 struct reactor {
 	callback *callbacks;
+	struct cell *head;
 };
 
 struct reactor *create_reactor(void);
