@@ -5,6 +5,7 @@ struct reactor *create_reactor(void)
 	struct reactor *result;
 
 	result = malloc(sizeof(struct reactor));
+	result->callbacks = NULL;
 	return (result);
 }
 
@@ -15,35 +16,50 @@ void destroy_reactor(struct reactor *reactor)
 
 struct cell *create_input_cell(struct reactor *reactor, int initial_value)
 {
+	struct cell *cell;
+
 	(void)reactor;
-	(void)initial_value;
-	return (NULL);
+	cell = malloc(sizeof(struct cell));
+	cell->value = initial_value;
+	cell->depend_cell1 = NULL;
+	cell->depend_cell2 = NULL;
+	return (cell);
 }
+
 struct cell *create_compute1_cell(struct reactor *reactor, struct cell *cell, compute1 compute)
 {
-	(void)reactor;
-	(void)cell;
-	(void)compute;
-	return (NULL);
+	struct cell *result;
+
+	result = create_input_cell(reactor, 0);
+	result->depend_cell1 = cell;
+	result->funcs.compute1 = compute;
+	return (result);
 }
+
 struct cell *create_compute2_cell(struct reactor *reactor, struct cell *cell1, struct cell *cell2, compute2 compute)
 {
-	(void)reactor;
-	(void)cell1;
-	(void)cell2;
-	(void)compute;
-	return (NULL);
+	struct cell *cell;
+
+	cell = create_input_cell(reactor, 0);
+	cell->depend_cell1 = cell1;
+	cell->depend_cell2 = cell2;
+	cell->funcs.compute2 = compute;
+	return (cell);
 }
 
 int get_cell_value(struct cell *cell)
 {
-	(void)cell;
-	return (0);
+	if (cell->depend_cell2)
+		return (cell->funcs.compute2(get_cell_value(cell->depend_cell1), get_cell_value(cell->depend_cell2)));
+	else if (cell->depend_cell1)
+		return (cell->funcs.compute1(get_cell_value(cell->depend_cell1)));
+	else 
+		return (cell->value);
 }
+
 void set_cell_value(struct cell *cell, int new_value)
 {
-	(void)cell;
-	(void)new_value;
+	cell->value = new_value;
 }
 
 // The callback should be called with the same void * given in add_callback.
