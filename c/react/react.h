@@ -9,8 +9,16 @@ typedef int callback_id;
 typedef int (*compute1)(int);
 typedef int (*compute2)(int, int);
 
+struct call_node {
+	callback func;
+	callback_id id;
+	void *data;
+	struct call_node *next;
+};
+
 struct cell {
 	int value;
+	struct call_node *call_node;
 	struct cell *depend_cell1;
 	struct cell *depend_cell2;
 	union {
