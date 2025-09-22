@@ -5,12 +5,12 @@ pub fn reply(message: &str) -> &str {
         .chars()
         .filter(char::is_ascii_alphabetic)
         .all(char::is_uppercase);
-    let is_question = message.trim().chars().last();
+    let question = message.trim().ends_with("?");
 
-    match (empty, has_chars && all_caps, is_question) {
+    match (empty, has_chars && all_caps, question) {
         (true, _, _) => "Fine. Be that way!",
-        (_, true, Some('?')) => "Calm down, I know what I'm doing!",
-        (_, _, Some('?')) => "Sure.",
+        (_, true, true) => "Calm down, I know what I'm doing!",
+        (_, _, true) => "Sure.",
         (_, true, _) => "Whoa, chill out!",
         _ => "Whatever.",
     }
