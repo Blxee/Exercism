@@ -7,21 +7,18 @@ pub enum Error {
 pub fn to_bytes(values: &[u32]) -> Vec<u8> {
     let mut total = Vec::new();
 
-    for &num in values {
-        let mut started = false;
-        for i in (0..5).rev() {
-            let byte = num >> 7 * i & 0b1111111;
-
-            if byte != 0 {
-                started = true;
+    for &(mut num) in values {
+        let mut bytes = Vec::new();
+        loop {
+            bytes.push((num & 0b1111111 | 0b10000000) as u8);
+            num >>= 7;
+            if num == 0 {
+                break;
             }
-
-            if i == 0 {
-                total.push(byte as u8);
-            } else if started {
-                total.push(byte as u8 | 0b10000000);
-            } 
         }
+        bytes.reverse();
+        bytes.last_mut().map(|b| *b &= 0b01111111);
+        total.extend(bytes);
     }
 
     total
