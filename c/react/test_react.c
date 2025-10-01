@@ -80,6 +80,7 @@ static void test_input_cells_have_value(void)
 
 static void test_input_cells_value_can_be_set(void)
 {
+   TEST_IGNORE();   // delete this line to run test
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 4);
 
@@ -91,6 +92,7 @@ static void test_input_cells_value_can_be_set(void)
 
 static void test_compute_cells_calculate_initial_value(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -102,6 +104,7 @@ static void test_compute_cells_calculate_initial_value(void)
 
 static void test_compute_cells_take_inputs_in_the_right_order(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *one = create_input_cell(r, 1);
    struct cell *two = create_input_cell(r, 2);
@@ -114,6 +117,7 @@ static void test_compute_cells_take_inputs_in_the_right_order(void)
 
 static void test_compute_cells_update_value_when_dependencies_are_changed(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -126,6 +130,7 @@ static void test_compute_cells_update_value_when_dependencies_are_changed(void)
 
 static void test_compute_cells_can_depend_on_other_compute_cells(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *times_two = create_compute1_cell(r, input, times2);
@@ -141,6 +146,7 @@ static void test_compute_cells_can_depend_on_other_compute_cells(void)
 
 static void test_compute_cells_fire_callbacks(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -157,6 +163,7 @@ static void test_compute_cells_fire_callbacks(void)
 
 static void test_callbacks_only_fire_on_change(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, big_if_three);
@@ -176,6 +183,7 @@ static void test_callbacks_only_fire_on_change(void)
 
 static void test_callbacks_do_not_report_already_reported_values(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -194,6 +202,7 @@ static void test_callbacks_do_not_report_already_reported_values(void)
 
 static void test_callbacks_can_fire_from_multiple_cells(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);
@@ -214,6 +223,7 @@ static void test_callbacks_can_fire_from_multiple_cells(void)
 
 static void test_callbacks_can_be_added_and_removed(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 11);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -246,6 +256,7 @@ static void
 test_removing_a_callback_multiple_times_doesnt_interfere_with_other_callbacks(
     void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -270,6 +281,7 @@ test_removing_a_callback_multiple_times_doesnt_interfere_with_other_callbacks(
 static void
 test_callbacks_only_called_once_even_if_multiple_dependencies_change(void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);
@@ -292,6 +304,7 @@ static void
 test_callbacks_not_called_if_dependencies_change_but_output_value_doesnt_change(
     void)
 {
+   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);

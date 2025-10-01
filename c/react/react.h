@@ -3,35 +3,19 @@
 
 #include <stdlib.h>
 
-typedef void (*callback)(void *, int);
-typedef int callback_id;
+#define LIST_INIT_CAP (8)
+
+typedef struct {
+	void **buffer;
+	unsigned int capacity;
+	unsigned int length;
+} list_t;
+
+struct reactor;
+struct cell;
 
 typedef int (*compute1)(int);
 typedef int (*compute2)(int, int);
-
-struct call_node {
-	callback func;
-	callback_id id;
-	void *data;
-	struct call_node *next;
-};
-
-struct cell {
-	int value;
-	struct call_node *call_node;
-	struct cell *depend_cell1;
-	struct cell *depend_cell2;
-	union {
-		compute1 compute1;
-		compute2 compute2;
-	} funcs;
-	struct cell *next;
-};
-
-struct reactor {
-	callback *callbacks;
-	struct cell *head;
-};
 
 struct reactor *create_reactor(void);
 // destroy_reactor should free all cells created under that reactor.
@@ -45,8 +29,17 @@ struct cell *create_compute2_cell(struct reactor *, struct cell *,
 int get_cell_value(struct cell *);
 void set_cell_value(struct cell *, int new_value);
 
+typedef void (*callback)(void *, int);
+typedef int callback_id;
+
 // The callback should be called with the same void * given in add_callback.
 callback_id add_callback(struct cell *, void *, callback);
 void remove_callback(struct cell *, callback_id);
+
+list_t *lst_create(void);
+void lst_add(list_t *lst, void *value);
+void *lst_get(list_t *lst, unsigned int i);
+void lst_remove(list_t *lst, void *value);
+void lst_free(list_t **lst);
 
 #endif
