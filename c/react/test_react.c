@@ -214,7 +214,6 @@ static void test_callbacks_can_fire_from_multiple_cells(void)
 
 static void test_callbacks_can_be_added_and_removed(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 11);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -247,7 +246,6 @@ static void
 test_removing_a_callback_multiple_times_doesnt_interfere_with_other_callbacks(
     void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);

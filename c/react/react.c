@@ -1,6 +1,4 @@
 #include "react.h"
-#include <malloc.h>
-#include <stdlib.h>
 
 list_t *lst_create(void)
 {
@@ -197,11 +195,26 @@ callback_id add_callback(struct cell *cell, void *cbinfo, callback callback)
 {
 	cbnode_t *cbnode = malloc(sizeof(cbnode_t));
 	
-	cbnode->callback = callback;
-	cbnode->cbinfo = cbinfo;
-	
 	if (cell->callbacks == NULL)
 		cell->callbacks = lst_create();
 
-	return (lst_add(cell->callbacks, cbnode));
+	cbnode->callback = callback;
+	cbnode->cbinfo = cbinfo;
+	cbnode->id = lst_add(cell->callbacks, cbnode);
+
+	return (cbnode->id);
+}
+
+void remove_callback(struct cell *cell, callback_id id)
+{
+	unsigned int i = 0;
+	cbnode_t *cbnode;
+	
+	while (i < cell->callbacks->length)
+	{
+		cbnode = lst_get(cell->callbacks, i);
+		if (id == cbnode->id)
+			lst_remove(cell->callbacks, i);
+		i++;
+	}
 }

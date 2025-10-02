@@ -29,6 +29,7 @@ typedef enum {
 
 typedef struct {
 	callback callback;
+	callback_id id;
 	void *cbinfo;
 } cbnode_t;
 
