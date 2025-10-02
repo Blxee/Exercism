@@ -113,3 +113,17 @@ struct cell *create_compute1_cell(struct reactor *reactor, struct cell *parent_c
 
 	return (cell);
 }
+
+struct cell *create_compute2_cell(struct reactor *reactor, struct cell *parent_cell1,
+                                  struct cell *parent_cell2, compute2 compute)
+{
+	struct cell *cell = malloc(sizeof(struct cell));
+
+	cell->parents.cell1 = parent_cell1;
+	cell->parents.cell2 = parent_cell2;
+	cell->funcs.comp2 = compute;
+	cell->value = compute(get_cell_value(parent_cell1), get_cell_value(parent_cell2));
+	lst_add(reactor->cells, cell);
+
+	return (cell);
+}

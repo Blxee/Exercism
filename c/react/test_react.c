@@ -102,7 +102,6 @@ static void test_compute_cells_calculate_initial_value(void)
 
 static void test_compute_cells_take_inputs_in_the_right_order(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *one = create_input_cell(r, 1);
    struct cell *two = create_input_cell(r, 2);
