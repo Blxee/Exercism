@@ -33,6 +33,20 @@ void *lst_get(list_t *lst, unsigned int i)
 	return (lst->buffer[i]);
 }
 
+int lst_contains(list_t *lst, void *value)
+{
+	unsigned int i;
+
+	i = 0;
+	while (i < lst->length)
+	{
+		if (lst_get(lst, i) == value)
+			return 1;
+		i++;
+	}
+	return 0;
+}
+
 void *lst_remove(list_t *lst, unsigned int i)
 {
 	unsigned int j;
@@ -94,41 +108,79 @@ int get_cell_value(struct cell *cell)
 	return (cell->value);
 }
 
+void save_old_value(struct cell *cell)
+{
+	unsigned int i;
+
+	cell->old_value = cell->value;
+	
+	i = 0;
+	while (cell->children && i < cell->children->length)
+		save_old_value(lst_get(cell->children, i++));
+}
+
+void fire_callbacks(struct cell *cell, list_t *call_stack)
+{
+	unsigned int i;
+	cbnode_t *cbnode;
+
+	if (cell->old_value == cell->value)
+		return;
+
+	i = 0;
+	while (cell->callbacks && i < cell->callbacks->length)
+	{
+		cbnode = lst_get(cell->callbacks, i);
+		if (!lst_contains(call_stack, cbnode))
+		{
+			cbnode->callback(cbnode->cbinfo, cell->value);
+			lst_add(call_stack, cbnode);
+		}
+		i++;
+	}
+	
+	i = 0;
+	while (cell->children && i < cell->children->length)
+		fire_callbacks(lst_get(cell->children, i++), call_stack);
+}
+
 void set_cell_value(struct cell *cell, int new_value)
+{
+	list_t *call_stack = lst_create();
+
+	save_old_value(cell);
+	cell->value = new_value;
+	update_cell_value(cell);
+	fire_callbacks(cell, call_stack);
+
+	lst_free(&call_stack);
+}
+
+void update_cell_value(struct cell *cell)
 {
 	int old_value = cell->value;
 	unsigned int i;
-	cbnode_t *cbnode;
 	
 	switch (cell->type)
 	{
-		case INPUT_CELL:
-			cell->value = new_value;
-			break;
 		case COMPUTE1_CELL:
 			cell->value = cell->funcs.comp1(get_cell_value(cell->parents.cell1));
 			break;
 		case COMPUTE2_CELL:
 			cell->value = cell->funcs.comp2(get_cell_value(cell->parents.cell1), get_cell_value(cell->parents.cell2));
 			break;
+		default:
+			break;
 	}
 
-	if (cell->value == old_value)
-		return;
-	
-	i = 0;
-	while (cell->children && i < cell->children->length)
+	if (cell->type == INPUT_CELL || cell->value != old_value)
 	{
-		set_cell_value(lst_get(cell->children, i), 0);
-		i++;
-	}
-
-	i = 0;
-	while (cell->callbacks && i < cell->callbacks->length)
-	{
-		cbnode = lst_get(cell->callbacks, i);
-		cbnode->callback(cbnode->cbinfo, cell->value);
-		i++;
+		i = 0;
+		while (cell->children && i < cell->children->length)
+		{
+			update_cell_value(lst_get(cell->children, i));
+			i++;
+		}
 	}
 }
 
@@ -214,7 +266,10 @@ void remove_callback(struct cell *cell, callback_id id)
 	{
 		cbnode = lst_get(cell->callbacks, i);
 		if (id == cbnode->id)
-			lst_remove(cell->callbacks, i);
+		{
+      lst_remove(cell->callbacks, i);
+	    break;
+		}
 		i++;
 	}
 }

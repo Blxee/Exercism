@@ -35,6 +35,7 @@ typedef struct {
 
 struct cell {
 	cell_type_t type;
+	int old_value;
 	int value;
 	struct {
 		struct cell *cell1;
@@ -49,7 +50,6 @@ struct cell {
 };
 
 struct reactor *create_reactor(void);
-// destroy_reactor should free all cells created under that reactor.
 void destroy_reactor(struct reactor *);
 
 struct cell *create_empty_cell(struct reactor *);
@@ -59,16 +59,19 @@ struct cell *create_compute2_cell(struct reactor *, struct cell *,
                                   struct cell *, compute2);
 
 int get_cell_value(struct cell *);
+void save_old_value(struct cell *cell);
+void update_cell_value(struct cell *);
 void set_cell_value(struct cell *, int new_value);
 
-// The callback should be called with the same void * given in add_callback.
 callback_id add_callback(struct cell *, void *, callback);
 void remove_callback(struct cell *, callback_id);
+void fire_callbacks(struct cell *cell, list_t *call_stack);
 
 list_t *lst_create(void);
 unsigned int lst_add(list_t *lst, void *value);
 void *lst_get(list_t *lst, unsigned int i);
 void *lst_remove(list_t *lst, unsigned int i);
+int lst_contains(list_t *lst, void *value);
 void lst_free(list_t **lst);
 
 #endif

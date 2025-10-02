@@ -270,7 +270,6 @@ test_removing_a_callback_multiple_times_doesnt_interfere_with_other_callbacks(
 static void
 test_callbacks_only_called_once_even_if_multiple_dependencies_change(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);
@@ -293,7 +292,6 @@ static void
 test_callbacks_not_called_if_dependencies_change_but_output_value_doesnt_change(
     void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);
