@@ -80,7 +80,6 @@ static void test_input_cells_have_value(void)
 
 static void test_input_cells_value_can_be_set(void)
 {
-   TEST_IGNORE();   // delete this line to run test
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 4);
 
@@ -92,7 +91,6 @@ static void test_input_cells_value_can_be_set(void)
 
 static void test_compute_cells_calculate_initial_value(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);

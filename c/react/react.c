@@ -86,6 +86,7 @@ void destroy_reactor(struct reactor *reactor)
 struct cell *create_input_cell(struct reactor *reactor, int initial_value)
 {
 	struct cell *cell = malloc(sizeof(struct cell));
+
 	cell->value = initial_value;
 	lst_add(reactor->cells, cell);
 	return (cell);
@@ -94,4 +95,21 @@ struct cell *create_input_cell(struct reactor *reactor, int initial_value)
 int get_cell_value(struct cell *cell)
 {
 	return (cell->value);
+}
+
+void set_cell_value(struct cell *cell, int new_value)
+{
+	cell->value = new_value;
+}
+
+struct cell *create_compute1_cell(struct reactor *reactor, struct cell *parent_cell, compute1 compute)
+{
+	struct cell *cell = malloc(sizeof(struct cell));
+
+	cell->parents.cell1 = parent_cell;
+	cell->funcs.comp1 = compute;
+	cell->value = compute(get_cell_value(parent_cell));
+	lst_add(reactor->cells, cell);
+
+	return (cell);
 }

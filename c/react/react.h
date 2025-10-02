@@ -20,6 +20,14 @@ struct reactor {
 
 struct cell {
 	int value;
+	struct {
+		struct cell *cell1;
+		struct cell *cell2;
+	} parents;
+	union {
+		compute1 comp1;		
+		compute2 comp2;		
+	} funcs;
 };
 
 struct reactor *create_reactor(void);
