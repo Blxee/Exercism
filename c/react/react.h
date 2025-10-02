@@ -11,11 +11,16 @@ typedef struct {
 	unsigned int length;
 } list_t;
 
-struct reactor;
-struct cell;
-
 typedef int (*compute1)(int);
 typedef int (*compute2)(int, int);
+
+struct reactor {
+	list_t *cells;
+};
+
+struct cell {
+	int value;
+};
 
 struct reactor *create_reactor(void);
 // destroy_reactor should free all cells created under that reactor.

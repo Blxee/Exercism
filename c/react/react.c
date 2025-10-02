@@ -1,4 +1,5 @@
 #include "react.h"
+#include <stdlib.h>
 
 list_t *lst_create(void)
 {
@@ -59,4 +60,38 @@ void lst_free(list_t **lst)
 	free((*lst)->buffer);
 	free(*lst);
 	*lst = NULL;
+}
+
+struct reactor *create_reactor(void)
+{
+	struct reactor *reactor = malloc(sizeof(struct reactor));
+	reactor->cells = lst_create();
+	return (reactor);
+}
+
+void destroy_reactor(struct reactor *reactor)
+{
+	unsigned int i;
+
+	i = 0;
+	while (i < reactor->cells->length)
+	{
+		free(lst_get(reactor->cells, i));
+		i++;
+	}
+	free(reactor->cells);
+	free(reactor);
+}
+
+struct cell *create_input_cell(struct reactor *reactor, int initial_value)
+{
+	struct cell *cell = malloc(sizeof(struct cell));
+	cell->value = initial_value;
+	lst_add(reactor->cells, cell);
+	return (cell);
+}
+
+int get_cell_value(struct cell *cell)
+{
+	return (cell->value);
 }
