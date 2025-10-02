@@ -114,7 +114,6 @@ static void test_compute_cells_take_inputs_in_the_right_order(void)
 
 static void test_compute_cells_update_value_when_dependencies_are_changed(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -127,7 +126,6 @@ static void test_compute_cells_update_value_when_dependencies_are_changed(void)
 
 static void test_compute_cells_can_depend_on_other_compute_cells(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *times_two = create_compute1_cell(r, input, times2);
@@ -143,7 +141,6 @@ static void test_compute_cells_can_depend_on_other_compute_cells(void)
 
 static void test_compute_cells_fire_callbacks(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);

@@ -1,4 +1,5 @@
 #include "react.h"
+#include <malloc.h>
 #include <stdlib.h>
 
 list_t *lst_create(void)
@@ -18,7 +19,7 @@ list_t *lst_create(void)
 	return (lst);
 }
 
-void lst_add(list_t *lst, void *value)
+unsigned int lst_add(list_t *lst, void *value)
 {
 	if (lst->length == lst->capacity)
 	{
@@ -26,6 +27,7 @@ void lst_add(list_t *lst, void *value)
 		lst->buffer = realloc(lst->buffer, lst->capacity);
 	}
 	lst->buffer[lst->length++] = value;
+	return (lst->length - 1);
 }
 
 void *lst_get(list_t *lst, unsigned int i)
@@ -33,26 +35,22 @@ void *lst_get(list_t *lst, unsigned int i)
 	return (lst->buffer[i]);
 }
 
-void lst_remove(list_t *lst, void *value)
+void *lst_remove(list_t *lst, unsigned int i)
 {
-	unsigned int i;
 	unsigned int j;
+	void *value;
 	
-	i = 0;
-	while (i < lst->length)
+	value = lst_get(lst, i);
+	lst->length--;
+
+	j = i;
+	while (j < lst->length)
 	{
-		if (lst_get(lst, i) == value)
-		{
-			lst->length--;
-			j = 0;
-			while (j < lst->length)
-			{
-				lst->buffer[j] = lst->buffer[j + 1];
-				j++;
-			}
-			break;
-		}
+		lst->buffer[j] = lst->buffer[j + 1];
+		j++;
 	}
+
+	return (value);
 }
 
 void lst_free(list_t **lst)
@@ -83,15 +81,6 @@ void destroy_reactor(struct reactor *reactor)
 	free(reactor);
 }
 
-struct cell *create_input_cell(struct reactor *reactor, int initial_value)
-{
-	struct cell *cell = malloc(sizeof(struct cell));
-
-	cell->value = initial_value;
-	lst_add(reactor->cells, cell);
-	return (cell);
-}
-
 int get_cell_value(struct cell *cell)
 {
 	return (cell->value);
@@ -99,17 +88,71 @@ int get_cell_value(struct cell *cell)
 
 void set_cell_value(struct cell *cell, int new_value)
 {
-	cell->value = new_value;
+	unsigned int i;
+	cbnode_t *cbnode;
+	
+	switch (cell->type)
+	{
+		case INPUT_CELL:
+			cell->value = new_value;
+			break;
+		case COMPUTE1_CELL:
+			cell->value = cell->funcs.comp1(get_cell_value(cell->parents.cell1));
+			break;
+		case COMPUTE2_CELL:
+			cell->value = cell->funcs.comp2(get_cell_value(cell->parents.cell1), get_cell_value(cell->parents.cell2));
+			break;
+	}
+
+	i = 0;
+	while (cell->children && i < cell->children->length)
+	{
+		set_cell_value(lst_get(cell->children, i), 0);
+		i++;
+	}
+
+	i = 0;
+	while (cell->callbacks && i < cell->callbacks->length)
+	{
+		cbnode = lst_get(cell->callbacks, i);
+		cbnode->callback(cbnode->cbinfo, cell->value);
+		i++;
+	}
+}
+
+struct cell *create_empty_cell(struct reactor *reactor)
+{
+	struct cell *cell = malloc(sizeof(struct cell));
+	unsigned int i = 0;
+
+	while (i < sizeof(struct cell))
+		((char *)cell)[i++] = 0;
+	lst_add(reactor->cells, cell);
+
+	return (cell);
+}
+
+struct cell *create_input_cell(struct reactor *reactor, int initial_value)
+{
+	struct cell *cell = create_empty_cell(reactor);
+
+	cell->type = INPUT_CELL;
+	cell->value = initial_value;
+	return (cell);
 }
 
 struct cell *create_compute1_cell(struct reactor *reactor, struct cell *parent_cell, compute1 compute)
 {
-	struct cell *cell = malloc(sizeof(struct cell));
+	struct cell *cell = create_empty_cell(reactor);
 
+	cell->type = COMPUTE1_CELL;
 	cell->parents.cell1 = parent_cell;
 	cell->funcs.comp1 = compute;
 	cell->value = compute(get_cell_value(parent_cell));
-	lst_add(reactor->cells, cell);
+
+	if (parent_cell->children == NULL)
+		parent_cell->children = lst_create();
+	lst_add(parent_cell->children, cell);
 
 	return (cell);
 }
@@ -117,13 +160,34 @@ struct cell *create_compute1_cell(struct reactor *reactor, struct cell *parent_c
 struct cell *create_compute2_cell(struct reactor *reactor, struct cell *parent_cell1,
                                   struct cell *parent_cell2, compute2 compute)
 {
-	struct cell *cell = malloc(sizeof(struct cell));
+	struct cell *cell = create_empty_cell(reactor);
 
+	cell->type = COMPUTE2_CELL;
 	cell->parents.cell1 = parent_cell1;
 	cell->parents.cell2 = parent_cell2;
 	cell->funcs.comp2 = compute;
 	cell->value = compute(get_cell_value(parent_cell1), get_cell_value(parent_cell2));
-	lst_add(reactor->cells, cell);
+
+	if (parent_cell1->children == NULL)
+		parent_cell1->children = lst_create();
+	lst_add(parent_cell1->children, cell);
+
+	if (parent_cell2->children == NULL)
+		parent_cell2->children = lst_create();
+	lst_add(parent_cell2->children, cell);
 
 	return (cell);
+}
+
+callback_id add_callback(struct cell *cell, void *cbinfo, callback callback)
+{
+	cbnode_t *cbnode = malloc(sizeof(cbnode_t));
+	
+	cbnode->callback = callback;
+	cbnode->cbinfo = cbinfo;
+	
+	if (cell->callbacks == NULL)
+		cell->callbacks = lst_create();
+
+	return (lst_add(cell->callbacks, cbnode));
 }
