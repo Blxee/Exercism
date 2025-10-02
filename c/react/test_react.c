@@ -157,7 +157,6 @@ static void test_compute_cells_fire_callbacks(void)
 
 static void test_callbacks_only_fire_on_change(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, big_if_three);
@@ -177,7 +176,6 @@ static void test_callbacks_only_fire_on_change(void)
 
 static void test_callbacks_do_not_report_already_reported_values(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *output = create_compute1_cell(r, input, plus1);
@@ -196,7 +194,6 @@ static void test_callbacks_do_not_report_already_reported_values(void)
 
 static void test_callbacks_can_fire_from_multiple_cells(void)
 {
-   TEST_IGNORE();
    struct reactor *r = create_reactor();
    struct cell *input = create_input_cell(r, 1);
    struct cell *plus_one = create_compute1_cell(r, input, plus1);

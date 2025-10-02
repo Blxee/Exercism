@@ -88,6 +88,7 @@ int get_cell_value(struct cell *cell)
 
 void set_cell_value(struct cell *cell, int new_value)
 {
+	int old_value = cell->value;
 	unsigned int i;
 	cbnode_t *cbnode;
 	
@@ -104,6 +105,9 @@ void set_cell_value(struct cell *cell, int new_value)
 			break;
 	}
 
+	if (cell->value == old_value)
+		return;
+	
 	i = 0;
 	while (cell->children && i < cell->children->length)
 	{
