@@ -70,14 +70,24 @@ struct reactor *create_reactor(void)
 void destroy_reactor(struct reactor *reactor)
 {
 	unsigned int i;
+	unsigned int j;
+	struct cell *cell;
 
 	i = 0;
 	while (i < reactor->cells->length)
 	{
-		free(lst_get(reactor->cells, i));
+		cell = lst_get(reactor->cells, i);
+		j = 0;
+		while (cell->callbacks && j < cell->callbacks->length)
+			free(lst_get(cell->callbacks, j++));
+		if (cell->callbacks)
+			lst_free(&(cell->callbacks));
+		if (cell->children)
+			lst_free(&(cell->children));
 		i++;
 	}
-	free(reactor->cells);
+
+	lst_free(&(reactor->cells));
 	free(reactor);
 }
 
