@@ -96,6 +96,7 @@ void destroy_reactor(struct reactor *reactor)
 			lst_free(&(cell->callbacks));
 		if (cell->children)
 			lst_free(&(cell->children));
+		free(cell);
 		i++;
 	}
 
@@ -267,7 +268,7 @@ void remove_callback(struct cell *cell, callback_id id)
 		cbnode = lst_get(cell->callbacks, i);
 		if (id == cbnode->id)
 		{
-      lst_remove(cell->callbacks, i);
+      free(lst_remove(cell->callbacks, i));
 	    break;
 		}
 		i++;
